@@ -34,6 +34,8 @@ model User {
   files                  File[]
   links                  Link[]
 
+  Memberships        Membership[]
+
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 }
@@ -142,6 +144,47 @@ model File {
   @@index([userId])
 }
 
+model Team {
+  id             String             @id @default(nanoid())
+  title          String
+
+  memberships    Membership[]
+  projects       Project[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Membership {
+  id             String          @id @default(cuid())
+  user           User            @relation(fields: [userId], references: [id])
+  userId         String
+  team           Team            @relation(fields: [teamId], references: [id])
+  teamId         String
+  membershipType MembershipType
+
+  @@unique([userId, teamId])
+  @@index([teamId])
+}
+
+enum MembershipType {
+  OWNER
+  MEMBER
+}
+
+model Project {
+  id             String    @id @default(nanoid())
+  title          String
+
+  team           Team      @relation(fields: [teamId], references: [id])
+  teamId         String
+
+  links          Link[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
 model Link {
   id             String    @id @default(nanoid())
   originalUrl    String
@@ -149,7 +192,10 @@ model Link {
   customAlias    String?   @unique
   expiresAt      DateTime?
   title          String?
-  description     String?
+  description    String?
+
+  project        Project   @relation(fields: [projectId], references: [id])
+  projectId      String
 
   user           User      @relation(fields: [userId], references: [id])
   userId         String

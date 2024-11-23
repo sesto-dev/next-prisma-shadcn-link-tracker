@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { MembershipType, PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
@@ -44,6 +44,9 @@ async function main() {
    // Clear existing data
    await prisma.click.deleteMany()
    await prisma.link.deleteMany()
+   await prisma.project.deleteMany()
+   await prisma.membership.deleteMany()
+   await prisma.team.deleteMany()
    await prisma.user.deleteMany()
 
    // Create Users with hashed passwords
@@ -84,7 +87,72 @@ async function main() {
 
    console.log('Created Users with hashed passwords...')
 
-   // Create Links for each User
+   // Create Teams
+   const teamsData = [
+      {
+         title: 'Team Alpha',
+      },
+      {
+         title: 'Team Beta',
+      },
+   ]
+
+   const teams = await prisma.team.createMany({
+      data: teamsData,
+   })
+
+   console.log('Created Teams...')
+
+   // Retrieve the created teams to get their IDs
+   const allTeams = await prisma.team.findMany()
+
+   // Create Memberships (Associating Users with Teams)
+   const membershipsData = [
+      {
+         userId: users[0].id,
+         teamId: allTeams[0].id,
+         membershipType: MembershipType.OWNER,
+      },
+      {
+         userId: users[1].id,
+         teamId: allTeams[0].id,
+         membershipType: MembershipType.MEMBER,
+      },
+      {
+         userId: users[1].id,
+         teamId: allTeams[1].id,
+         membershipType: MembershipType.OWNER,
+      },
+   ]
+
+   await prisma.membership.createMany({
+      data: membershipsData,
+   })
+
+   console.log('Created Team Memberships...')
+
+   // Create Projects for each Team
+   const projectsData = [
+      {
+         title: 'Project X',
+         teamId: allTeams[0].id,
+      },
+      {
+         title: 'Project Y',
+         teamId: allTeams[1].id,
+      },
+   ]
+
+   const projects = await prisma.project.createMany({
+      data: projectsData,
+   })
+
+   console.log('Created Projects...')
+
+   // Retrieve the created projects to get their IDs
+   const allProjects = await prisma.project.findMany()
+
+   // Create Links for each Project
    const linksData = [
       {
          originalUrl: 'https://www.example.com',
@@ -93,6 +161,7 @@ async function main() {
          expiresAt: null,
          title: 'Example Home',
          description: 'The homepage of Example.com',
+         projectId: allProjects[0].id,
          userId: users[0].id,
       },
       {
@@ -102,6 +171,7 @@ async function main() {
          expiresAt: null,
          title: 'OpenAI',
          description: 'OpenAI Official Website',
+         projectId: allProjects[0].id,
          userId: users[0].id,
       },
       {
@@ -111,6 +181,7 @@ async function main() {
          expiresAt: null,
          title: 'GitHub',
          description: 'GitHub - Where the world builds software',
+         projectId: allProjects[1].id,
          userId: users[1].id,
       },
    ]

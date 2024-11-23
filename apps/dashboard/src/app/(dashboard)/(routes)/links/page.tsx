@@ -6,43 +6,48 @@ import { formatter } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
-import { LinksTable } from './components/table'
-import { LinkColumn } from './components/table'
+import FilterableTeamLinks from './components/filterable-team-links'
+import { TeamLinks } from './components/team-links'
 
 export default async function ProductsPage() {
-   const links = await prisma.link.findMany({
-      include: {},
+   const teams = await prisma.team.findMany({
+      include: {
+         projects: {
+            include: {
+               links: {
+                  select: {
+                     id: true,
+                     title: true,
+                     shortenedUrl: true,
+                     createdAt: true,
+                     _count: {
+                        select: { clicks: true },
+                     },
+                  },
+               },
+            },
+         },
+      },
       orderBy: {
          createdAt: 'desc',
       },
    })
 
-   const formattedLinks: LinkColumn[] = links.map((link) => ({
-      id: link.id,
-      title: link.title,
-      originalUrl: link.originalUrl,
-      shortenedUrl: link.shortenedUrl,
-      customAlias: link.customAlias,
-      expiresAt: link.expiresAt,
-      createdAt: link.createdAt,
-      updatedAt: link.updatedAt,
+   const teamsWithClickCount = teams.map((team) => ({
+      ...team,
+      projects: team.projects.map((project) => ({
+         ...project,
+         links: project.links.map((link) => ({
+            ...link,
+            clicks: link._count.clicks,
+         })),
+      })),
    }))
 
    return (
-      <div className="block space-y-4 my-6">
-         <div className="flex items-center justify-between">
-            <Heading
-               title={`Links (${links.length})`}
-               description="Manage links for your store"
-            />
-            <Link href="/links/new">
-               <Button>
-                  <Plus className="mr-2 h-4" /> Add New
-               </Button>
-            </Link>
-         </div>
-         <Separator />
-         <LinksTable data={formattedLinks} />
+      <div className="container mx-auto py-10">
+         <h1 className="text-4xl font-bold mb-10">Link Tracking Dashboard</h1>
+         <FilterableTeamLinks teams={teamsWithClickCount} />
       </div>
    )
 }
