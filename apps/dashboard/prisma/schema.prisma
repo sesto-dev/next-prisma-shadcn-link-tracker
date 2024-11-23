@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                     String          @id @default(cuid())
+  email                  String?         @unique
+  phone                  String?         @unique
+
+  name                   String?
+  birthday               String?
+
+  OTP                    String?
+  emailUnsubscribeToken  String?         @unique @default(cuid())
+  referralCode           String?         @unique
+
+  isBanned               Boolean         @default(false)
+  isEmailVerified        Boolean         @default(false)
+  isPhoneVerified        Boolean         @default(false)
+  isEmailSubscribed      Boolean         @default(false)
+  isPhoneSubscribed      Boolean         @default(false)
+
+  passwordHash           String?
+
+  payments               Payment[]
+  notifications          Notification[]
+  errors                 Error[]
+  files                  File[]
+  links                  Link[]
+
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  content   String
+  isRead    Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model DiscountCode {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  stock             Int      @default(1)
+  description       String?
+  percent           Int
+  maxDiscountAmount Float    @default(1)
+  startDate         DateTime
+  endDate           DateTime
+
+  createdAt DateTime @default(now())
+}
+
+model Refund {
+  id        String   @id @default(cuid())
+  amount    Float
+  reason    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id             String           @id @default(cuid())
+  number         Int              @unique @default(autoincrement())
+  status         PaymentStatusEnum
+
+  refId          String           @unique
+  cardPan        String?
+  cardHash       String?
+  fee            Float?
+
+  isSuccessful   Boolean          @default(false)
+  payable        Float
+
+  provider       PaymentProvider  @relation(fields: [providerId], references: [id])
+  providerId     String
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([providerId])
+}
+
+enum PaymentStatusEnum {
+  Processing
+  Paid
+  Failed
+  Denied
+}
+
+model PaymentProvider {
+  id          String    @id @default(cuid())
+  title       String    @unique
+  description String?
+  websiteUrl  String?
+  isActive    Boolean   @default(false)
+
+  orders      Payment[]
+}
+
+model Error {
+  id        String   @id @default(cuid())
+
+  error     String
+
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model File {
+  id        String   @id @default(cuid())
+
+  url       String
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Link {
+  id             String    @id @default(nanoid())
+  originalUrl    String
+  shortenedUrl   String    @unique
+  customAlias    String?   @unique
+  expiresAt      DateTime?
+  title          String?
+  description     String?
+
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String
+
+  clicks         Click[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([shortenedUrl])
+}
+
+model Click {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+
+  ipAddress     String
+  userAgent     String
+  referer       String?
+  country       String?
+  region        String?
+  city          String?
+  deviceType    DeviceTypeEnum
+  browser       String?
+  os            String?
+
+  link          Link      @relation(fields: [linkId], references: [id])
+  linkId        String
+
+  @@index([linkId])
+  @@index([ipAddress])
+  @@index([createdAt])
+}
+
+enum DeviceTypeEnum {
+  Desktop
+  Mobile
+  Tablet
+  Other
+}
