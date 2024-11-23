@@ -1,102 +1,200 @@
-![Screenshot](https://github.com/sesto-dev/next-prisma-tailwind-ecommerce/assets/45223699/00444538-a496-4f90-814f-7e57a580ad17)
+# LinkTracker Dashboard
 
-<div align="center"><h3>Full-Stack E-Commerce Platform</h3><p>Built using Typescript with Next.js, Prisma ORM and TailwindCSS.</p></div>
 <div align="center">
-<a href="https://pasargad.vercel.app">Storefront</a> 
-<span> · </span>
-<a href="https://pardis.vercel.app">Admin Panel</a>
+  <h3>Comprehensive Link Tracking Dashboard</h3>
+  <p>Shorten, share, and monitor your links with ease.</p>
 </div>
 
-## 👋 Introduction
+## 🚀 Introduction
 
-Welcome to the open-source Next.js E-Commerce Storefront with Admin Panel project! This project is built with TypeScript, Tailwind CSS, and Prisma, providing a powerful and flexible solution for building and managing your e-commerce website.
+Welcome to **LinkTracker Dashboard**! A powerful web application that allows users to create, manage, and monitor shortened URLs using your custom domain. Whether you're sharing links for personal use, marketing campaigns, or tracking the performance of your content, LinkTracker provides insightful analytics to help you understand your audience better.
 
-## 🥂 Features
+## 🛠 Features
 
--  [x] [**Next.js 14**](https://nextjs.org) App Router and React Server Components.
--  [x] Custom dynamic `Sitemap.xml` generation.
--  [x] Admin dashboard with products, orders, and payments.
--  [x] File uploads using `next-cloudinary`.
--  [x] Authentication using `middleware.ts` and `httpOnly` cookies.
--  [x] Storefront with blog, products, and categories.
--  [x] Database-Stored blogs powered by **MDX** templates.
--  [x] Email verification and invoices using [react-email-tailwind-templates](https://github.com/sesto-dev/react-email-tailwind-templates).
--  [x] [**TailwindCSS**](https://tailwindcss.com/) for utility-first CSS.
--  [x] UI built with [**Radix**](https://www.radix-ui.com/) and stunning UI components, all thanks to [**shadcn/ui**](https://ui.shadcn.com/).
--  [x] Type-Validation with **Zod**.
--  [x] [**Next Metadata API**](https://nextjs.org/docs/api-reference/metadata) for SEO handling.
--  [ ] Comprehensive implementations for i18n.
+-  **URL Shortening**
 
-## 2️⃣ Why are there 2 apps in the app folder?
+   -  Generate customized shortened URLs using your own domain.
+   -  Customize the back-half of your links for branding purposes.
 
-This project is made up of 2 separate apps ( admin and storefront ) which should be deployed separately. If you are deploying with Vercel you should create 2 different apps.
+-  **Comprehensive Analytics**
 
-![image](https://github.com/Accretence/next-prisma-tailwind-ecommerce/assets/45223699/f5adc1ac-9dbb-46cb-bb6e-a8db15883348)
+   -  **Click Tracking:** Monitor the total number of clicks each link receives.
+   -  **Geographical Data:** View where your clicks are coming from on an interactive map.
+   -  **Device Information:** Understand which devices (mobile, desktop, tablet) are being used.
+   -  **Referrer Insights:** See which websites or platforms are driving traffic to your links.
+   -  **Real-Time Data:** Get up-to-the-minute statistics on your link performance.
 
-Under the general tab there is a Root Directory option, for the admin app you should put in "apps/admin" and for the storefront app you should put in "apps/storefront".
+-  **User-Friendly Dashboard**
 
-## 🔐 Authentication
+   -  Intuitive interface for managing all your links in one place.
+   -  Filter and sort analytics data based on various parameters.
+   -  Export data for further analysis or reporting.
 
-The authentication is handled using JWT tokens stored in cookies and verified inside the `middleware.ts` file. The middleware function takes in the HTTP request, reads the `token` cookie and if the JWT is successfully verified, it sets the `X-USER-ID` header with the userId as the value, otherwise the request is sent back with 401 status.
+-  **Security & Privacy**
 
-## 👁‍🗨 Environment variables
+   -  Secure user authentication to protect your dashboard.
+   -  Privacy-compliant data handling and storage.
 
-Environment variables are stored in `.env` files. By default the `.env.example` file is included in source control and contains
-settings and defaults to get the app running. Any secrets or local overrides of these values should be placed in a
-`.env` file, which is ignored from source control.
+-  **Customizable Notifications**
+   -  Set up alerts for specific events, such as a sudden spike in clicks.
 
-Remember, never commit and store `.env` in the source control, just only `.env.example` without any data specified.
+## 📈 Getting Started
 
-You can [read more about environment variables here](https://nextjs.org/docs/basic-features/environment-variables).
+### Prerequisites
 
-## 🏃‍♂️ Getting Started Locally
+-  **Node.js** (v14 or later)
+-  **npm** or **yarn**
+-  **Database:** PostgreSQL, MongoDB, or any supported database system.
+-  **Domain:** Your own domain for URL shortening.
 
-Clone the repository.
+### Installation
 
-```bash
-git clone https://github.com/sesto-dev/next-prisma-tailwind-ecommerce
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/sesto-dev/next-prisma-shadcn-link-tracker.git
+   ```
+
+2. **Navigate to the Project Directory**
+
+   ```bash
+   cd next-prisma-shadcn-link-tracker
+   ```
+
+3. **Install Dependencies**
+
+   ```bash
+   bun install
+   ```
+
+4. **Configure Environment Variables**
+
+   Create a `.env` file in the root directory and add the following variables:
+
+   ```env
+   PORT=3000
+   DATABASE_URL=your_database_connection_string
+   DOMAIN=yourcustomdomain.com
+   API_KEY=your_api_key
+   ```
+
+5. **Run Database Migrations**
+
+   ```bash
+   bun run migrate
+   ```
+
+6. **Start the Development Server**
+
+   ```bash
+   bun run dev
+   ```
+
+   The application will be available at `http://localhost:3000`.
+
+### Building for Production
+
+1. **Build the Application**
+
+   ```bash
+   bun run build
+   ```
+
+2. **Start the Production Server**
+
+   ```bash
+   bun start
+   ```
+
+## 🌐 Deployment
+
+LinkTracker Dashboard can be deployed on various platforms such as Vercel, Netlify, or traditional VPS servers. Follow the platform-specific deployment guides to get your application live.
+
+## 🛠️ Technologies Used
+
+-  **Frontend:**
+
+   -  React.js
+   -  Next.js
+   -  Tailwind CSS
+
+-  **Backend:**
+
+   -  Node.js
+   -  Express.js
+   -  Prisma ORM
+
+-  **Database:**
+
+   -  PostgreSQL / MongoDB
+
+-  **Analytics:**
+
+   -  Google Analytics API
+   -  Custom tracking solutions
+
+-  **Authentication:**
+   -  JWT (JSON Web Tokens)
+   -  OAuth 2.0
+
+## 📁 Project Structure
+
+```
+linktracker-dashboard/
+├── frontend/
+│ ├── components/
+│ ├── pages/
+│ └── styles/
+├── backend/
+│ ├── controllers/
+│ ├── models/
+│ ├── routes/
+│ └── utils/
+├── prisma/
+│ └── schema.prisma
+├── .env.example
+├── README.md
+├── package.json
+└── bun.lockb
 ```
 
-Navigate to each folder in the `apps` folder and and set the variables.
+## 👥 Contributing
 
-```sh
-cp .env.example .env
-```
+Contributions are welcome! Please follow these steps to contribute:
 
-Get all dependencies sorted.
+1. **Fork the Repository**
 
-```sh
-bun install
-```
+2. **Create a Feature Branch**
 
-Bring your database to life with pushing the database schema.
+   ```bash
+   git checkout -b feature/YourFeatureName
+   ```
 
-```bash
-bun run db:push
-```
+3. **Commit Your Changes**
 
-```sh
-bun run dev
-```
+   ```bash
+   git commit -m "Add some feature"
+   ```
 
-## 🔑 Database
+4. **Push to the Branch**
 
-Prisma ORM can use any PostgreSQL database. [Supabase is the easiest to work with.](https://www.prisma.io/docs/guides/database/supabase) Simply set `DATABASE_URL` in your `.env` file to work.
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
 
-### `bun run db`
+5. **Open a Pull Request**
 
-This project exposes a package.json script for accessing prisma via `bun run db:<command>`. You should always try to use this script when interacting with prisma locally.
+## 📝 License
 
-### Making changes to the database schema
+This project is licensed under the [MIT License](./LICENSE).
 
-Make changes to your database by modifying `prisma/schema.prisma`.
+## 📞 Contact
 
-## 🛸 How to Deploy the Project
+For any questions or feedback, feel free to reach out:
 
-Follow the deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+-  **Email:** sesto@post.com
+-  **GitHub:** [sesto-dev](https://github.com/sesto-dev)
 
-## 📄 License
+---
 
-This project is MIT-licensed and is free to use and modify for your own projects. Check the [LICENSE](./LICENSE) file for details.
-
-Created by [Amirhossein Mohammadi](https://github.com/sesto-dev).
+Created with ❤️ by [Sesto](https://github.com/sesto-dev)
