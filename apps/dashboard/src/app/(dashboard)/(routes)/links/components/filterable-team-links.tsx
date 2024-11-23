@@ -1,6 +1,13 @@
 'use client'
 
 import {
+   Accordion,
+   AccordionContent,
+   AccordionItem,
+   AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Badge } from '@/components/ui/badge'
+import {
    Command,
    CommandInput,
    CommandItem,
@@ -16,7 +23,7 @@ import {
 import { Check } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-import { TeamLinks } from './team-links'
+import { LinkCard } from './link-card'
 
 interface Team {
    id: string
@@ -58,22 +65,20 @@ export default function FilterableTeamLinks({
          .flatMap((team) => team.projects)
    }, [selectedTeams, teams])
 
-   // Filter teams based on selectedTeams and selectedProjects
-   const filteredTeams = useMemo(() => {
-      return teams
-         .filter(
-            (team) =>
-               selectedTeams.length === 0 || selectedTeams.includes(team.id)
+   // Filter projects based on selectedTeams and selectedProjects
+   const filteredProjects = useMemo(() => {
+      let projects = teams.flatMap((team) => team.projects)
+      if (selectedTeams.length > 0) {
+         projects = projects.filter((project) =>
+            selectedTeams.includes(project.id)
          )
-         .map((team) => ({
-            ...team,
-            projects: team.projects.filter(
-               (project) =>
-                  selectedProjects.length === 0 ||
-                  selectedProjects.includes(project.id)
-            ),
-         }))
-         .filter((team) => team.projects.length > 0)
+      }
+      if (selectedProjects.length > 0) {
+         projects = projects.filter((project) =>
+            selectedProjects.includes(project.id)
+         )
+      }
+      return projects
    }, [teams, selectedTeams, selectedProjects])
 
    const handleTeamSelect = (teamId: string) => {
@@ -99,6 +104,7 @@ export default function FilterableTeamLinks({
 
    return (
       <div>
+         {/* Filters */}
          <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
             {/* Team Filter */}
             <div className="flex-1 mb-4 md:mb-0">
@@ -189,11 +195,26 @@ export default function FilterableTeamLinks({
             </div>
          </div>
 
-         {/* Display Filtered Teams and Projects */}
-         <div className="space-y-10">
-            {filteredTeams.map((team) => (
-               <TeamLinks key={team.id} team={team} />
-            ))}
+         {/* Display Filtered Projects with Accordions */}
+         <div className="space-y-4">
+            <Accordion type="multiple">
+               {filteredProjects.map((project) => (
+                  <AccordionItem key={project.id} value={project.id}>
+                     <AccordionTrigger>
+                        <h2 className="text-lg font-semibold">
+                           {project.title}
+                        </h2>
+                     </AccordionTrigger>
+                     <AccordionContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                           {project.links.map((link) => (
+                              <LinkCard key={link.id} link={link} />
+                           ))}
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+               ))}
+            </Accordion>
          </div>
       </div>
    )

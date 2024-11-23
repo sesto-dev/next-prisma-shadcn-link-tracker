@@ -10,13 +10,34 @@ interface Link {
    createdAt: Date
 }
 
-export function LinkCard({ link }: { link: Link }) {
+interface Team {
+   id: string
+   title: string
+   color: string
+}
+
+interface LinkCardProps {
+   link: Link
+   team?: Team
+   teamColor?: string
+}
+
+export function LinkCard({ link, team, teamColor }: LinkCardProps) {
    return (
       <Card className="flex flex-col justify-between">
          <CardContent className="pt-6">
-            <h4 className="font-semibold mb-2 truncate" title={link.title}>
-               {link.title}
-            </h4>
+            <div className="flex items-center mb-2">
+               {team && (
+                  <span
+                     className={`inline-block text-xs text-white px-2 py-1 rounded-full mr-2 ${teamColor || 'bg-gray-500'}`}
+                  >
+                     {team.title}
+                  </span>
+               )}
+               <h4 className="font-semibold truncate" title={link.title}>
+                  {link.title}
+               </h4>
+            </div>
             <p
                className="text-sm text-muted-foreground mb-2 truncate"
                title={link.shortenedUrl}
@@ -25,7 +46,7 @@ export function LinkCard({ link }: { link: Link }) {
             </p>
             <div className="flex justify-between items-center text-sm">
                <span>{link.clicks} clicks</span>
-               <span>{link.createdAt.toLocaleDateString()}</span>
+               <span>{new Date(link.createdAt).toLocaleDateString()}</span>
             </div>
          </CardContent>
          <CardFooter className="flex justify-between">

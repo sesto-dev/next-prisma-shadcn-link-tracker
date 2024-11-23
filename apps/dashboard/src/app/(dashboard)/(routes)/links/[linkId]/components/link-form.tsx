@@ -1,3 +1,5 @@
+'use client'
+
 import { AlertModal } from '@/components/modals/alert-modal'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -21,9 +23,9 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@prisma/client'
+import { Link, Project, Team } from '@prisma/client'
 import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -39,20 +41,29 @@ const formSchema = z.object({
       }, 'Invalid date format'),
    title: z.string().optional(),
    description: z.string().optional(),
+   teamId: z.string().min(1, 'Team is required'),
+   projectId: z.string().min(1, 'Project is required'),
 })
 
 type LinkFormValues = z.infer<typeof formSchema>
 
 interface LinkFormProps {
    initialData: Link | null
+   teams: Team[]
+   projects: Project[]
 }
 
-export const LinkForm: React.FC<LinkFormProps> = ({ initialData }) => {
+export const LinkForm: React.FC<LinkFormProps> = ({
+   initialData,
+   teams,
+   projects,
+}) => {
    const params = useParams()
    const router = useRouter()
 
    const [open, setOpen] = useState(false)
    const [loading, setLoading] = useState(false)
+   const [filteredProjects, setFilteredProjects] = useState<Project[]>([])
 
    const title = initialData ? 'Edit Link' : 'Create Link'
    const description = initialData
@@ -67,6 +78,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({ initialData }) => {
            expiresAt: initialData.expiresAt
               ? initialData.expiresAt.toISOString().split('T')[0]
               : '',
+           projectId: initialData.projectId,
         }
       : {
            originalUrl: '',
@@ -74,12 +86,32 @@ export const LinkForm: React.FC<LinkFormProps> = ({ initialData }) => {
            expiresAt: '',
            title: '',
            description: '',
+           teamId: '',
+           projectId: '',
         }
 
    const form = useForm<LinkFormValues>({
       resolver: zodResolver(formSchema),
       defaultValues,
    })
+
+   const selectedTeamId = form.watch('teamId')
+
+   useEffect(() => {
+      if (selectedTeamId) {
+         const filtered = projects.filter(
+            (project) => project.teamId === selectedTeamId
+         )
+         setFilteredProjects(filtered)
+         // Reset projectId if it's not in the filtered list
+         if (!filtered.find((p) => p.id === form.getValues('projectId'))) {
+            form.setValue('projectId', '')
+         }
+      } else {
+         setFilteredProjects([])
+         form.setValue('projectId', '')
+      }
+   }, [selectedTeamId, projects, form])
 
    const onSubmit = async (data: LinkFormValues) => {
       try {
@@ -95,12 +127,18 @@ export const LinkForm: React.FC<LinkFormProps> = ({ initialData }) => {
          if (initialData) {
             await fetch(`/api/links/${params.linkId}`, {
                method: 'PATCH',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                body: JSON.stringify(payload),
                cache: 'no-store',
             })
          } else {
             await fetch(`/api/links`, {
                method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                body: JSON.stringify(payload),
                cache: 'no-store',
             })
@@ -211,6 +249,65 @@ export const LinkForm: React.FC<LinkFormProps> = ({ initialData }) => {
                         </FormDescription>
                         <FormControl>
                            <Input type="date" disabled={loading} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                     </FormItem>
+                  )}
+               />
+               <FormField
+                  control={form.control}
+                  name="teamId"
+                  render={({ field }) => (
+                     <FormItem>
+                        <FormLabel>Team</FormLabel>
+                        <FormControl>
+                           <Select
+                              disabled={loading}
+                              onValueChange={field.onChange}
+                              value={field.value}
+                           >
+                              <SelectTrigger>
+                                 <SelectValue placeholder="Select a team" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                 {teams.map((team) => (
+                                    <SelectItem key={team.id} value={team.id}>
+                                       {team.title}
+                                    </SelectItem>
+                                 ))}
+                              </SelectContent>
+                           </Select>
+                        </FormControl>
+                        <FormMessage />
+                     </FormItem>
+                  )}
+               />
+               <FormField
+                  control={form.control}
+                  name="projectId"
+                  render={({ field }) => (
+                     <FormItem>
+                        <FormLabel>Project</FormLabel>
+                        <FormControl>
+                           <Select
+                              disabled={loading || !selectedTeamId}
+                              onValueChange={field.onChange}
+                              value={field.value}
+                           >
+                              <SelectTrigger>
+                                 <SelectValue placeholder="Select a project" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                 {filteredProjects.map((project) => (
+                                    <SelectItem
+                                       key={project.id}
+                                       value={project.id}
+                                    >
+                                       {project.title}
+                                    </SelectItem>
+                                 ))}
+                              </SelectContent>
+                           </Select>
                         </FormControl>
                         <FormMessage />
                      </FormItem>

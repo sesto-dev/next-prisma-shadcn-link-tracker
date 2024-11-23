@@ -7,7 +7,6 @@ import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
 import FilterableTeamLinks from './components/filterable-team-links'
-import { TeamLinks } from './components/team-links'
 
 export default async function ProductsPage() {
    const teams = await prisma.team.findMany({
@@ -46,7 +45,6 @@ export default async function ProductsPage() {
 
    return (
       <div className="container mx-auto py-10">
-         <h1 className="text-4xl font-bold mb-10">Link Tracking Dashboard</h1>
          <FilterableTeamLinks teams={teamsWithClickCount} />
       </div>
    )
