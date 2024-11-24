@@ -18,7 +18,6 @@ export async function POST(req: Request) {
       const link = await prisma.link.create({
          data: {
             ...restData,
-            shortenedUrl: shortId,
             user: {
                connect: { id: userId },
             },

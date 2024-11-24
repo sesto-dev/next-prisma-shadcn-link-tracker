@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { BarChart, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 
 interface Link {
    id: string
    title: string
-   shortenedUrl: string
    clicks: number
    createdAt: Date
 }
@@ -40,9 +40,9 @@ export function LinkCard({ link, team, teamColor }: LinkCardProps) {
             </div>
             <p
                className="text-sm text-muted-foreground mb-2 truncate"
-               title={link.shortenedUrl}
+               title={link.id}
             >
-               {link.shortenedUrl}
+               {link.id}
             </p>
             <div className="flex justify-between items-center text-sm">
                <span>{link.clicks} clicks</span>
@@ -50,10 +50,12 @@ export function LinkCard({ link, team, teamColor }: LinkCardProps) {
             </div>
          </CardContent>
          <CardFooter className="flex justify-between">
-            <Button size="sm" variant="outline">
-               <ExternalLink className="h-4 w-4 mr-2" />
-               Open
-            </Button>
+            <Link target="_blank" href={`/${link.id}`}>
+               <Button size="sm" variant="outline">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open
+               </Button>
+            </Link>
             <Button size="sm" variant="outline">
                <BarChart className="h-4 w-4 mr-2" />
                Stats

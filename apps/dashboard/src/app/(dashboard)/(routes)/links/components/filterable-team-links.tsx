@@ -40,7 +40,6 @@ interface Project {
 interface Link {
    id: string
    title: string
-   shortenedUrl: string
    clicks: number
    createdAt: Date
 }

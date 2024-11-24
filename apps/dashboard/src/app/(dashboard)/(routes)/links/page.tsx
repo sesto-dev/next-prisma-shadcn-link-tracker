@@ -17,7 +17,6 @@ export default async function ProductsPage() {
                   select: {
                      id: true,
                      title: true,
-                     shortenedUrl: true,
                      createdAt: true,
                      _count: {
                         select: { clicks: true },

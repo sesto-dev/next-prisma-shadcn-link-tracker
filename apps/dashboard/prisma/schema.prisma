@@ -188,7 +188,6 @@ model Project {
 model Link {
   id             String    @id @default(nanoid())
   originalUrl    String
-  shortenedUrl   String    @unique
   customAlias    String?   @unique
   expiresAt      DateTime?
   title          String?
@@ -206,7 +205,6 @@ model Link {
   updatedAt      DateTime  @updatedAt
 
   @@index([userId])
-  @@index([shortenedUrl])
 }
 
 model Click {

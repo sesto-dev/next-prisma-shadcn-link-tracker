@@ -156,7 +156,6 @@ async function main() {
    const linksData = [
       {
          originalUrl: 'https://www.example.com',
-         shortenedUrl: 'exmpl1',
          customAlias: 'home',
          expiresAt: null,
          title: 'Example Home',
@@ -166,7 +165,6 @@ async function main() {
       },
       {
          originalUrl: 'https://www.openai.com',
-         shortenedUrl: 'opnai1',
          customAlias: 'openai',
          expiresAt: null,
          title: 'OpenAI',
@@ -176,7 +174,6 @@ async function main() {
       },
       {
          originalUrl: 'https://www.github.com',
-         shortenedUrl: 'ghub1',
          customAlias: 'github',
          expiresAt: null,
          title: 'GitHub',
